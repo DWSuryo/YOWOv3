@@ -57,7 +57,7 @@ def detect(config):
             if k == ord('q'):
                 return
         else:
-            cv2.imwrite(r"H:\detect_images\_" + str(idx) + r".jpg", origin_image)
+            cv2.imwrite(r"E:\Dito\Dataset\detect_images_" + str(idx) + r".jpg", origin_image)
 
             print("ok")
             print("image {} saved!".format(idx))

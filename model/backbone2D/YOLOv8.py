@@ -203,6 +203,10 @@ def build_yolov8(config):
     assert ver in ['n', 's', 'm', 'l', 'x'], "wrong version of YOLOv8!"
     pretrain_path = config['BACKBONE2D']['YOLOv8']['PRETRAIN'][ver]
 
+    # # check yolo directory
+    # print(ver)
+    # print(pretrain_path)
+
     if ver == 'n':
         depth = [1, 2, 2]
         width = [3, 16, 32, 64, 128, 256]

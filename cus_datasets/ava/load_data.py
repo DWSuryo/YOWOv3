@@ -14,8 +14,10 @@ class AVA_dataset(data.Dataset):
 
     def __init__(self, root_path, split_path, data_path, clip_length, sampling_rate, img_size, transform=Augmentation(), phase='train'):
        self.root_path     = root_path
-       self.split_path    = os.path.join(root_path, 'annotations', split_path)
+       self.split_path    = os.path.join(root_path, 'annotations', 'ava_v2.2', split_path)
+    #    self.split_path    = fr"{root_path} + '\' + 'annotations\' + split_path"  # manual
        self.data_path     = os.path.join(root_path, data_path)
+    #    self.data_path     = fr"{root_path} + '\' + data_path"   # manual
        self.clip_length   = clip_length
        self.sampling_rate = sampling_rate
        self.transform     = transform
@@ -28,15 +30,19 @@ class AVA_dataset(data.Dataset):
     
     def read_ann_csv(self):
         my_dict = dict()
+        # test output
+        print(f"split path: {self.split_path}")
 
         with open(self.split_path, 'r') as f:
             csv_reader = csv.reader(f)
             for row in csv_reader:
-                # Combine the first two columns to form the key
-                key = '/'.join([row[0], row[1]])
+                # Combine the first two columns to form the key -> file name
+                key = '/'.join([row[0], row[1]])    # linux
+                # key = '\\'.join([row[0], row[1]])   # windows
 
-                # Combine the next four columns to form the subkey
-                subkey = '/'.join([row[2], row[3], row[4], row[5]])
+                # Combine the next four columns to form the subkey -> bounding box
+                subkey = '/'.join([row[2], row[3], row[4], row[5]])     # linux
+                # subkey = '\\'.join([row[2], row[3], row[4], row[5]])    # windows
 
                 # Get the dictionary associated with the key, or create a new one if it doesn't exist
                 sub_dict = my_dict.setdefault(key, dict())
@@ -46,6 +52,7 @@ class AVA_dataset(data.Dataset):
 
                 # Append the value to the sub-list
                 sub_list.append(int(row[6]))
+                # print(f"sublist: {sub_list}")
 
         self.data_dict = my_dict
         self.data_list = list(my_dict.keys())
@@ -56,7 +63,8 @@ class AVA_dataset(data.Dataset):
     
     def __getitem__(self, index, get_origin_image=False):
 
-        video_name, sec = self.data_list[index].split('/')
+        video_name, sec = self.data_list[index].split('/')  # linux
+        # video_name, sec = self.data_list[index].split('\\') # windows
         str_sec = sec
         sec = int(sec)
         key_frame_idx = (sec - 900) * 30 + 1
@@ -131,6 +139,15 @@ def build_ava_dataset(config, phase):
     clip_length   = config['clip_length']
     sampling_rate = config['sampling_rate']
     img_size      = config['img_size']
+
+    # windows directory management
+    print(root_path)
+    root_path = root_path.replace('/', '\\')
+    # print(os.path.exists(root_path))
+    # dir_components = root_path.split('/')
+    # print(dir_components)
+    # joined_dir = os.path.join(*dir_components)
+    # print(joined_dir)
 
     if phase == 'train':
         split_path    = "ava_train_v2.2.csv"

@@ -36,13 +36,14 @@ def train_model(config):
     # Save config file
     #######################################################
     source_file = config['config_path']
-    destination_file = os.path.join(config['save_folder'], 'config.yaml')
+    destination_file = os.path.join(config['save_folder'], 'config_new.yaml')
     shutil.copyfile(source_file, destination_file)
     #######################################################
     
     # create dataloader, model, criterion
     ####################################################
     dataset = build_dataset(config, phase='train')
+    # print(dataset)
     
     dataloader = data.DataLoader(dataset, config['batch_size'], True, collate_fn=collate_fn
                                  , num_workers=config['num_workers'], pin_memory=True)
@@ -125,7 +126,7 @@ def train_model(config):
                 ema.update(model)
 
                 print("epoch : {}, update : {}, loss = {}".format(cur_epoch,  cnt_pram_update, loss_acc), flush=True)
-                with open(os.path.join(config['save_folder'], "logging.txt"), "w") as f:
+                with open(os.path.join(config['save_folder'], "logging_new.txt"), "w") as f:
                     f.write("epoch : {}, update : {}, loss = {}".format(cur_epoch,  cnt_pram_update, loss_acc))
 
                 loss_acc = 0.0

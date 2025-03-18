@@ -344,5 +344,6 @@ class InceptionI3d(nn.Module):
 
 def build_i3d(config):
     pretrain_path = config['BACKBONE3D']['I3D']['PRETRAIN']['default']
+    print(f"I3D: {pretrain_path}")
     return InceptionI3d(in_channels=3, pretrain_path=pretrain_path)
     
