@@ -9,6 +9,16 @@ BACKBONE2D:
       l : weights/backbone2D/YOLOv8/v8_l.pth
       x : weights/backbone2D/YOLOv8/v8_x.pth
 
+  YOLOv11:
+    ver : m
+
+    PRETRAIN:
+      n : weights/backbone2D/YOLOv11/v11_n.pt
+      s : weights/backbone2D/YOLOv11/v11_s.pt
+      m : weights/backbone2D/YOLOv11/v11_m.pt
+      l : weights/backbone2D/YOLOv11/v11_l.pt
+      x : weights/backbone2D/YOLOv11/v11_x.pt
+
 BACKBONE3D:
 
   MOBILENET:
@@ -103,7 +113,7 @@ mode              : decoupled
 interchannels     : [256, 256, 256]
 # pretrain_path     :
 # pretrain_path     : weights/model_checkpoint/avav2.2/ema_epoch_9_m30.pth
-pretrain_path     : weights/model_checkpoint/ema_epoch_1.pth
+pretrain_path     : weights/model_checkpoint/avav2.2/yolov8_m_i3d/ema_epoch_9.pth
 data_root         : E:/Dito/Dataset/avav2.2_train_set
 img_size          : 224
 clip_length       : 16
