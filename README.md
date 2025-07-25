@@ -1,3 +1,9 @@
+Note: this is a fork of the original YOWOv3. Expect modifications
+
+Modifications:
+
+* add YOLOv11 ([same author as yolov8-pt](https://github.com/jahongir7174/YOLOv11-pt))
+
 # YOWOv3: An Efficient and Generalized Framework for Human Action Detection and Recognition
 
 This is an implementation of paper : [YOWOv3: An Efficient and Generalized Framework for Human Action Detection and Recognition](https://arxiv.org/abs/2408.02623).

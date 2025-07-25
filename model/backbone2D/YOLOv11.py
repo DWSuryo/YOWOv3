@@ -312,7 +312,7 @@ class YOLO(torch.nn.Module):
             return
         state_dict = self.state_dict()
 
-        pretrain_state_dict = torch.load(self.pretrain_path, weights_only=True)
+        pretrain_state_dict = torch.load(self.pretrain_path, weights_only=False)
         
         for param_name, value in pretrain_state_dict.items():
             if param_name not in state_dict:
@@ -368,7 +368,7 @@ class YOLO(torch.nn.Module):
 
 def build_yolov11(config):
     ver = config['BACKBONE2D']['YOLOv11']['ver']
-    assert ver in ['n', 's', 'm', 'l', 'x'], "wrong version of YOLOv8!"
+    assert ver in ['n', 's', 'm', 'l', 'x'], "wrong version of YOLOv11!"
     pretrain_path = config['BACKBONE2D']['YOLOv11']['PRETRAIN'][ver]
 
     # # check yolo directory
@@ -376,19 +376,24 @@ def build_yolov11(config):
     # print(pretrain_path)
 
     if ver == 'n':
-        depth = [1, 2, 2]
+        csp = [False, True]
+        depth = [1, 1, 1, 1, 1, 1]
         width = [3, 16, 32, 64, 128, 256]
     elif ver == 's':
-        depth = [1, 2, 2]
+        csp = [False, True]
+        depth = [1, 1, 1, 1, 1, 1]
         width = [3, 32, 64, 128, 256, 512]
     elif ver == 'm':
-        depth = [2, 4, 4]
-        width = [3, 48, 96, 192, 384, 576]
+        csp = [True, True]
+        depth = [1, 1, 1, 1, 1, 1]
+        width = [3, 64, 128, 256, 512, 512]
     elif ver == 'l':
-        depth = [3, 6, 6]
+        csp = [True, True]
+        depth = [2, 2, 2, 2, 2, 2]
         width = [3, 64, 128, 256, 512, 512]
     elif ver == 'x':
-        depth = [3, 6, 6]
-        width = [3, 80, 160, 320, 640, 640]
+        csp = [True, True]
+        depth = [2, 2, 2, 2, 2, 2]
+        width = [3, 96, 192, 384, 768, 768]
 
-    return YOLO(width, depth, pretrain_path)
+    return YOLO(width, depth, csp, pretrain_path)
