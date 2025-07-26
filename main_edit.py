@@ -2,6 +2,7 @@ from scripts import train, ava_eval, ucf_eval, detect, live
 import argparse
 from utils.build_config import build_config
 from datetime import datetime
+import onnx
 
 if __name__ == "__main__":
     time_start = datetime.now()

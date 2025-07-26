@@ -1,5 +1,5 @@
 import torch
-from thop import profile
+from thop import profile, clever_format
 from model.TSN.YOWOv3 import build_yowov3
 
 def get_info(config, model):
@@ -12,6 +12,7 @@ def get_info(config, model):
     model.eval()
 
     flops, params = profile(model, inputs=(video_clip, ), verbose=False)
+    # flops, params = clever_format(nums=[2 * flops, params], format="%.3f")
 
     print('==============================')
     print('FLOPs : {:.2f} G'.format(flops / 1e9))

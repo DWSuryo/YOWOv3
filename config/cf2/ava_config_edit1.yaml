@@ -14,8 +14,8 @@ BACKBONE2D:
 
     PRETRAIN:
       n : weights/backbone2D/YOLOv11/best_n_50_state_dict.pt
-      s : weights/backbone2D/YOLOv11/v11_s.pt
-      m : weights/backbone2D/YOLOv11/v11_m.pt
+      s : weights/backbone2D/YOLOv11/best_s_50_state_dict.pt
+      m : weights/backbone2D/YOLOv11/best_m_50_state_dict.pt
       l : weights/backbone2D/YOLOv11/v11_l.pt
       x : weights/backbone2D/YOLOv11/v11_x.pt
 
@@ -111,15 +111,16 @@ backbone3D        : i3d
 fusion_module     : CFAM
 mode              : decoupled
 interchannels     : [256, 256, 256]
-# pretrain_path     :
+pretrain_path     :
 # pretrain_path     : weights/model_checkpoint/avav2.2/ema_epoch_9_m30.pth
 # pretrain_path     : weights/model_checkpoint/avav2.2/yolov8_m_i3d/ema_epoch_9.pth
-pretrain_path     : weights/model_checkpoint/avav2.2/yolov11_n_i3d/ema_epoch_5.pth
-data_root         : E:/Dito/Dataset/avav2.2_train_set # insert external HDD
+# pretrain_path     : weights/model_checkpoint/avav2.2/yolov11_n_i3d/ema_epoch_5.pth
+# data_root         : E:/Dito/Dataset/avav2.2_train_set # insert external HDD
+data_root         : D:/dataset/avav2.2_train_set
 img_size          : 224
 clip_length       : 16
-batch_size        : 8
-num_workers       : 6
+batch_size        : 16
+num_workers       : 8
 acc_grad          : 16
 lr                : 0.0001
 weight_decay      : 0.0005

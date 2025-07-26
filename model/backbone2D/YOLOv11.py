@@ -312,7 +312,7 @@ class YOLO(torch.nn.Module):
             return
         state_dict = self.state_dict()
 
-        pretrain_state_dict = torch.load(self.pretrain_path, weights_only=False)
+        pretrain_state_dict = torch.load(self.pretrain_path, map_location="cuda", weights_only=False)
         
         for param_name, value in pretrain_state_dict.items():
             if param_name not in state_dict:

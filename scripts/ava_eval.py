@@ -26,7 +26,7 @@ def ava_eval_collate_fn(batch):
 def eval(config):
 
     dataset    = build_dataset(config, phase='test')
-    dataloader = data.DataLoader(dataset, 32, False, collate_fn=ava_eval_collate_fn, num_workers=6, pin_memory=True)
+    dataloader = data.DataLoader(dataset, config["batch_size"], False, collate_fn=ava_eval_collate_fn, num_workers=8, pin_memory=True)
     model      = build_yowov3(config)
     get_info(config, model)
     model.to("cuda")

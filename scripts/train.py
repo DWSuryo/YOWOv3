@@ -30,6 +30,7 @@ from utils.warmup_lr import LinearWarmup
 import shutil
 from utils.flops import get_info
 
+import tqdm
 
 def train_model(config):
 
@@ -47,7 +48,9 @@ def train_model(config):
     
     dataloader = data.DataLoader(dataset, config['batch_size'], True, collate_fn=collate_fn
                                  , num_workers=config['num_workers'], pin_memory=True)
-    
+    num_steps = len(dataloader)
+    print(f"steps: {num_steps}")
+
     model = build_yowov3(config)
     get_info(config, model)
     model.to("cuda")
@@ -88,7 +91,10 @@ def train_model(config):
 
     while(cur_epoch <= max_epoch):
         cnt_pram_update = 0
-        for iteration, (batch_clip, batch_bboxes, batch_labels) in enumerate(dataloader): 
+        p_bar = enumerate(dataloader)
+        print(('\n' + '%10s' * 3) % ('epoch', 'memory', 'loss'))
+        p_bar = tqdm.tqdm(p_bar, total=num_steps)
+        for iteration, (batch_clip, batch_bboxes, batch_labels) in p_bar: 
 
             batch_size   = batch_clip.shape[0]
             batch_clip   = batch_clip.to("cuda")
@@ -125,7 +131,13 @@ def train_model(config):
                 optimizer.zero_grad()
                 ema.update(model)
 
-                print("epoch : {}, update : {}, loss = {}".format(cur_epoch,  cnt_pram_update, loss_acc), flush=True)
+                # progress bar
+                memory = f'{torch.cuda.memory_reserved() / 1E9:.4g}G'  # (GB)
+                s = ('%10s' * 2 + '%10.3g' * 1) % (f'{cur_epoch}/{max_epoch}', memory, loss_acc)
+                                                    #    avg_box_loss.avg, avg_cls_loss.avg, avg_dfl_loss.avg)
+                p_bar.set_description(s)
+
+                # print("epoch : {}, update : {}, loss = {}".format(cur_epoch,  cnt_pram_update, loss_acc), flush=True)
                 with open(os.path.join(config['save_folder'], "logging_new.txt"), "w") as f:
                     f.write("epoch : {}, update : {}, loss = {}".format(cur_epoch,  cnt_pram_update, loss_acc))
 
