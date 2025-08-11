@@ -112,11 +112,12 @@ fusion_module     : CFAM
 mode              : decoupled
 interchannels     : [256, 256, 256]
 pretrain_path     :
+pretrain_path     : weights/model_checkpoint/ema_epoch_1.pth
 # pretrain_path     : weights/model_checkpoint/avav2.2/ema_epoch_9_m30.pth
 # pretrain_path     : weights/model_checkpoint/avav2.2/yolov8_m_i3d/ema_epoch_9.pth
 # pretrain_path     : weights/model_checkpoint/avav2.2/yolov11_n_i3d/ema_epoch_5.pth
-# data_root         : E:/Dito/Dataset/avav2.2_train_set # insert external HDD
-data_root         : D:/dataset/avav2.2_train_set
+data_root         : E:/Dito/Dataset/avav2.2_train_set
+# data_root         : D:/dataset/avav2.2_train_set
 img_size          : 224
 clip_length       : 16
 batch_size        : 16
@@ -132,7 +133,7 @@ save_folder       : weights/model_checkpoint/
 sampling_rate     : 1
 labelmap          : evaluator/Evaluation/ava_action_list_v2.2_for_activitynet_2019.pbtxt
 groundtruth       : evaluator/Evaluation/ava_val_v2.2.csv
-detections        : ava_result/ava_predicted_file.csv
+detections        : ava_result/ava_predicted_file_y11_n50_i3d.csv
 
 
 idx2name:

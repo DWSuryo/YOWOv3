@@ -3,24 +3,13 @@ import torch.utils.data as data
 import argparse
 import yaml
 import os
-import cv2
+import cv2 # Use OpenCV for image loading
 import pickle
 import numpy as np
-from cus_datasets.ucf.transforms import Augmentation, UCF_transform
 from PIL import Image
 import csv
 import albumentations as A
-from albumentations.pytorch import ToTensorV2
-            
-import torch
-import torch.utils.data as data
-import os
-import cv2 # Use OpenCV for image loading
-import numpy as np
-import albumentations as A
 from albumentations.pytorch import ToTensorV2 # To convert NumPy array to PyTorch Tensor
-import pandas as pd
-
 
 class AVA_dataset(data.Dataset):
 
@@ -227,7 +216,6 @@ def build_ava_dataset(config, phase):
         format='pascal_voc', # [x_min, y_min, x_max, y_max] normalized (0-1)
         min_area=1.0,        # Minimum area in pixels for a box to be kept (after transform)
         min_visibility=0.1,  # Minimum visibility of a box to be kept (after transform)
-        clip=True
         # No `label_fields` here for multi-hot labels!
     )
 

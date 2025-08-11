@@ -46,16 +46,19 @@ def train_model(config):
     dataset = build_dataset(config, phase='train')
     # print(dataset)
     
+    # load data
     dataloader = data.DataLoader(dataset, config['batch_size'], True, collate_fn=collate_fn
                                  , num_workers=config['num_workers'], pin_memory=True)
     num_steps = len(dataloader)
     print(f"steps: {num_steps}")
 
+    # build model
     model = build_yowov3(config)
     get_info(config, model)
     model.to("cuda")
     model.train()
     
+    # build loss algorithm
     criterion = build_loss(model, config)
     #####################################################
 
@@ -116,6 +119,7 @@ def train_model(config):
 
             targets = torch.cat(targets, dim=0)
 
+            # loss function
             loss = criterion(outputs, targets) / acc_grad
             loss_acc += loss.item()
             loss.backward()
