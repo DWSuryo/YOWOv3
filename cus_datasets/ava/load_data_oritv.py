@@ -6,7 +6,8 @@ import os
 import cv2
 import pickle
 import numpy as np
-from cus_datasets.ucf.transforms_ori import Augmentation, UCF_transform
+from cus_datasets.ucf.transforms_oritv import Augmentation, UCF_transform
+import torchvision
 from PIL import Image
 import csv
             
@@ -71,7 +72,7 @@ class AVA_dataset(data.Dataset):
         video_path = os.path.join(self.data_path, video_name)
 
         clip        = []
-        boxes       = []
+        # boxes       = []
         for i in reversed(range(self.clip_length)):
             cur_frame_idx = key_frame_idx - i*self.sampling_rate
 
@@ -80,7 +81,8 @@ class AVA_dataset(data.Dataset):
 
             # get frame
             cur_frame_path = os.path.join(video_path, video_name + '_{:06d}.jpg'.format(cur_frame_idx))
-            cur_frame = Image.open(cur_frame_path).convert('RGB')
+            # cur_frame = Image.open(cur_frame_path).convert('RGB')
+            cur_frame = torchvision.io.read_image(cur_frame_path)
             clip.append(cur_frame)
 
         if get_origin_image == True:
@@ -89,8 +91,10 @@ class AVA_dataset(data.Dataset):
 
         boxes  = []
         labels = [] 
-
-        W, H =  clip[-1].size   # extract image dimension
+        
+        # get original dimensions from the tensor
+        # W, H =  clip[-1].size
+        H, W = clip[-1].shape[1], clip[-1].shape[2]
 
         cur_frame_dict = self.data_dict[self.data_list[index]]
         for raw_bboxes in cur_frame_dict.keys():
@@ -114,7 +118,6 @@ class AVA_dataset(data.Dataset):
         # clip   : list of (num_frame) PIL image (RGB order, 0 .. 255)
         # boxes  : np array [nbox, 4], absolute coordinate (tl-br)
         # labels : np array [nbox, nclass]
-
 
         targets = np.concatenate((boxes, labels), axis=1)
         clip, targets = self.transform(clip, targets)

@@ -52,6 +52,66 @@ def train_model(config):
     num_steps = len(dataloader)
     print(f"steps: {num_steps}")
 
+    # # 1. Get a single batch from the DataLoader
+    # data_iter = iter(dataloader)
+    # batch_clip, batch_bboxes, batch_labels = next(data_iter)
+
+    # # Check the batch size and move data to CPU
+    # batch_size = batch_clip.shape[0]
+    # batch_clip = batch_clip.cpu()
+    # batch_bboxes = [b.cpu() for b in batch_bboxes]
+    # batch_labels = [l.cpu() for l in batch_labels]
+
+    # print(f"Batch size: {batch_size}")
+    # print(f"Clip shape: {batch_clip.shape}") # Should be [B, 3, T, H, W]
+
+    # # 2. Visualize a single sample from the batch (e.g., the first sample)
+    # sample_idx = 0
+
+    # # Get the key frame (the last frame of the clip)
+    # # The clip shape is [C, T, H, W], so we grab the last frame (T-1)
+    # clip = batch_clip[sample_idx]
+    # key_frame = clip[:, -1, :, :] 
+
+    # # Convert the key frame tensor to a NumPy array and permute dimensions for plotting
+    # # PyTorch: [C, H, W] -> NumPy: [H, W, C]
+    # key_frame_np = key_frame.permute(1, 2, 0).numpy()
+
+    # # Denormalize the image for display
+    # # Albumentations transforms normalize, so we need to reverse it
+    # mean = np.array([0.485, 0.456, 0.406])
+    # std = np.array([0.229, 0.224, 0.225])
+    # key_frame_np = key_frame_np * std + mean
+    # key_frame_np = np.clip(key_frame_np * 255, 0, 255).astype(np.uint8)
+
+    # # Get the bounding boxes and labels for this sample
+    # boxes = batch_bboxes[sample_idx]
+    # labels = batch_labels[sample_idx]
+
+    # # 3. Plot the image and draw the bounding boxes
+    # plt.figure(figsize=(10, 10))
+    # ax = plt.gca()
+    # ax.imshow(key_frame_np)
+
+    # # Draw each bounding box on the image
+    # for box, label in zip(boxes, labels):
+    #     x1, y1, x2, y2 = box.numpy()
+        
+    #     # Create a rectangle patch
+    #     rect = plt.Rectangle((x1, y1), x2 - x1, y2 - y1,
+    #                         linewidth=2, edgecolor='r', facecolor='none')
+    #     ax.add_patch(rect)
+        
+    #     # Add the label
+    #     ax.text(x1, y1, f'Label: {label.item()}', 
+    #             bbox=dict(facecolor='yellow', alpha=0.5),
+    #             fontsize=8, color='black')
+
+    # plt.title("Sample from DataLoader")
+    # plt.axis('off')
+    # plt.show()
+
+
     # build model
     model = build_yowov3(config)
     get_info(config, model)
@@ -105,18 +165,29 @@ def train_model(config):
                 batch_bboxes[idx]       = batch_bboxes[idx].to("cuda")
                 batch_labels[idx]       = batch_labels[idx].to("cuda")
 
+            # test = list(zip(batch_bboxes, batch_labels))
+            # print(test[0])
+
             outputs = model(batch_clip)
 
             targets = []
             for i, (bboxes, labels) in enumerate(zip(batch_bboxes, batch_labels)):
                 nbox = bboxes.shape[0]
+                if nbox == 0:
+                    continue
                 nclass = labels.shape[1]
                 target = torch.Tensor(nbox, 5 + nclass)
                 target[:, 0] = i
                 target[:, 1:5] = bboxes
                 target[:, 5:] = labels
                 targets.append(target)
-
+                # try:
+                # except IndexError:
+                #     a = (bboxes, labels)
+                #     print("IndexError. Here is the error result")
+                #     print(a)
+                #     raise IndexError
+                
             targets = torch.cat(targets, dim=0)
 
             # loss function

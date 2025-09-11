@@ -1,5 +1,5 @@
 from cus_datasets.ucf.load_data import build_ucf_dataset
-from cus_datasets.ava.load_data import build_ava_dataset
+from cus_datasets.ava.load_data_ori import build_ava_dataset
 from cus_datasets.jhmdb.load_data import build_jhmdb_dataset
 from cus_datasets.ucf_crime.load_data import build_ucfcrime_dataset
 

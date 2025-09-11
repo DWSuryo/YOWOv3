@@ -2,6 +2,21 @@ from . import ucf_config
 import torch
 import numpy as np
 
+import torch
+import torch.utils.data as data
+import argparse
+import yaml
+import os
+import cv2
+import pickle
+import numpy as np
+from PIL import Image
+import sys
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+
+import random
+import torchvision.transforms.functional as F
 class UCF_transform():
     """
     Args:
@@ -28,6 +43,7 @@ class UCF_transform():
         return clip
     
     def __call__(self, clip, targets):
+        # print(clip[-1].size)
         W, H = clip[-1].size
         targets[:, :4] /= np.array([W, H, W, H])
         clip = [img.resize([self.img_size, self.img_size]) for img in clip]
@@ -37,21 +53,6 @@ class UCF_transform():
         targets = torch.as_tensor(targets).float()
         return clip, targets
 
-import torch
-import torch.utils.data as data
-import argparse
-import yaml
-import os
-import cv2
-import pickle
-import numpy as np
-from PIL import Image
-import sys
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
-
-import random
-import torchvision.transforms.functional as F
 
 class Augmentation(object):
     def __init__(self, img_size=224, jitter=0.2, hue=0.1, saturation=1.5, exposure=1.5):
