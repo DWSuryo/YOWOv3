@@ -11,7 +11,9 @@ weights/
 !weights/model_checkpoint/
 testing_code/
 lab/
+data/
 lab.py
+checkpoint/
 
 # Distribution / packaging
 .Python
