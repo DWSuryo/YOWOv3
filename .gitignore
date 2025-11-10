@@ -8,6 +8,7 @@ __pycache__/
 
 # Custom
 weights/
+!weights/model_checkpoint/
 testing_code/
 lab/
 lab.py
@@ -123,3 +124,8 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# files
+ava_result/*
+!ava_result/ava_predicted_file.csv
+!ava_result/ava_val_v2.2*.csv

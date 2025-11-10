@@ -16,6 +16,11 @@ if __name__ == "__main__":
 
     config = build_config(args.config)
 
+    # config specification
+    print(f"backbone2D: {config['backbone2D']}, backbone3D: {config['backbone3D']}")
+    print(f"loss: {config['loss']}, fusion: {config['fusion_module']}")
+    print(f"batch size: {config['batch_size']}, epochs: {config['max_epoch']}, num_workers: {config['num_workers']}")
+
     if args.mode == 'train':
         train.train_model(config=config)
 
