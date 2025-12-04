@@ -4,6 +4,18 @@ import torch
 
 # from utils.util import make_anchors
 
+def make_anchors(x, strides, offset=0.5):
+    assert x is not None
+    anchor_tensor, stride_tensor = [], []
+    dtype, device = x[0].dtype, x[0].device
+    for i, stride in enumerate(strides):
+        _, _, h, w = x[i].shape
+        sx = torch.arange(end=w, device=device, dtype=dtype) + offset  # shift x
+        sy = torch.arange(end=h, device=device, dtype=dtype) + offset  # shift y
+        sy, sx = torch.meshgrid(sy, sx)
+        anchor_tensor.append(torch.stack((sx, sy), -1).view(-1, 2))
+        stride_tensor.append(torch.full((h * w, 1), stride, dtype=dtype, device=device))
+    return torch.cat(anchor_tensor), torch.cat(stride_tensor)
 
 def fuse_conv(conv, norm):
     fused_conv = torch.nn.Conv2d(conv.in_channels,
@@ -219,74 +231,72 @@ class DarkFPN(torch.nn.Module):
 #         x = torch.arange(ch, dtype=torch.float).view(1, ch, 1, 1)
 #         self.conv.weight.data[:] = torch.nn.Parameter(x)
 
-#     def forward(self, x):
-#         b, c, a = x.shape
-#         x = x.view(b, 4, self.ch, a).transpose(2, 1)
-#         return self.conv(x.softmax(1)).view(b, 4, a)
+    # def forward(self, x):
+    #     b, c, a = x.shape
+    #     x = x.view(b, 4, self.ch, a).transpose(2, 1)
+    #     return self.conv(x.softmax(1)).view(b, 4, a)
 
 
 # class Head(torch.nn.Module):
 #     anchors = torch.empty(0)
 #     strides = torch.empty(0)
 
-#     def __init__(self, nc=80, filters=()):
-#         super().__init__()
-#         self.ch = 16  # DFL channels
-#         self.nc = nc  # number of classes
-#         self.nl = len(filters)  # number of detection layers
-#         self.no = nc + self.ch * 4  # number of outputs per anchor
-#         self.stride = torch.zeros(self.nl)  # strides computed during build
+    # def __init__(self, nc=80, filters=()):
+    #     super().__init__()
+    #     self.ch = 16  # DFL channels
+    #     self.nc = nc  # number of classes
+    #     self.nl = len(filters)  # number of detection layers
+    #     self.no = nc + self.ch * 4  # number of outputs per anchor
+    #     self.stride = torch.zeros(self.nl)  # strides computed during build
 
-#         box = max(64, filters[0] // 4)
-#         cls = max(80, filters[0], self.nc)
+        # box = max(64, filters[0] // 4)
+        # cls = max(80, filters[0], self.nc)
 
-#         self.dfl = DFL(self.ch)
-#         self.box = torch.nn.ModuleList(torch.nn.Sequential(Conv(x, box,torch.nn.SiLU(), k=3, p=1),
-#                                                            Conv(box, box,torch.nn.SiLU(), k=3, p=1),
-#                                                            torch.nn.Conv2d(box, out_channels=4 * self.ch,
-#                                                                            kernel_size=1)) for x in filters)
-#         self.cls = torch.nn.ModuleList(torch.nn.Sequential(Conv(x, x, torch.nn.SiLU(), k=3, p=1, g=x),
-#                                                            Conv(x, cls, torch.nn.SiLU()),
-#                                                            Conv(cls, cls, torch.nn.SiLU(), k=3, p=1, g=cls),
-#                                                            Conv(cls, cls, torch.nn.SiLU()),
-#                                                            torch.nn.Conv2d(cls, out_channels=self.nc,
-#                                                                            kernel_size=1)) for x in filters)
+        # self.dfl = DFL(self.ch)
+        # self.box = torch.nn.ModuleList(torch.nn.Sequential(Conv(x, box,torch.nn.SiLU(), k=3, p=1),
+        #                                                    Conv(box, box,torch.nn.SiLU(), k=3, p=1),
+        #                                                    torch.nn.Conv2d(box, out_channels=4 * self.ch,
+        #                                                                    kernel_size=1)) for x in filters)
+        # self.cls = torch.nn.ModuleList(torch.nn.Sequential(Conv(x, x, torch.nn.SiLU(), k=3, p=1, g=x),
+        #                                                    Conv(x, cls, torch.nn.SiLU()),
+        #                                                    Conv(cls, cls, torch.nn.SiLU(), k=3, p=1, g=cls),
+        #                                                    Conv(cls, cls, torch.nn.SiLU()),
+        #                                                    torch.nn.Conv2d(cls, out_channels=self.nc,
+        #                                                                    kernel_size=1)) for x in filters)
 
-#     def forward(self, x):
-#         for i, (box, cls) in enumerate(zip(self.box, self.cls)):
-#             x[i] = torch.cat(tensors=(box(x[i]), cls(x[i])), dim=1)
-#         if self.training:
-#             return x
+    # def forward(self, x):
+    #     for i, (box, cls) in enumerate(zip(self.box, self.cls)):
+    #         x[i] = torch.cat(tensors=(box(x[i]), cls(x[i])), dim=1)
+    #     if self.training:
+    #         return x
 
-#         self.anchors, self.strides = (i.transpose(0, 1) for i in make_anchors(x, self.stride))
-#         x = torch.cat([i.view(x[0].shape[0], self.no, -1) for i in x], dim=2)
-#         box, cls = x.split(split_size=(4 * self.ch, self.nc), dim=1)
+        # self.anchors, self.strides = (i.transpose(0, 1) for i in make_anchors(x, self.stride))
+        # x = torch.cat([i.view(x[0].shape[0], self.no, -1) for i in x], dim=2)
+        # box, cls = x.split(split_size=(4 * self.ch, self.nc), dim=1)
 
-#         a, b = self.dfl(box).chunk(2, 1)
-#         a = self.anchors.unsqueeze(0) - a
-#         b = self.anchors.unsqueeze(0) + b
-#         box = torch.cat(tensors=((a + b) / 2, b - a), dim=1)
+        # a, b = self.dfl(box).chunk(2, 1)
+        # a = self.anchors.unsqueeze(0) - a
+        # b = self.anchors.unsqueeze(0) + b
+        # box = torch.cat(tensors=((a + b) / 2, b - a), dim=1)
 
-#         return torch.cat(tensors=(box * self.strides, cls.sigmoid()), dim=1)
+        # return torch.cat(tensors=(box * self.strides, cls.sigmoid()), dim=1)
 
-#     def initialize_biases(self):
-#         # Initialize biases
-#         # WARNING: requires stride availability
-#         for box, cls, s in zip(self.box, self.cls, self.stride):
-#             # box
-#             box[-1].bias.data[:] = 1.0
-#             # cls (.01 objects, 80 classes, 640 image)
-#             cls[-1].bias.data[:self.nc] = math.log(5 / self.nc / (640 / s) ** 2)
+    # def initialize_biases(self):
+    #     # Initialize biases
+    #     # WARNING: requires stride availability
+    #     for box, cls, s in zip(self.box, self.cls, self.stride):
+    #         # box
+    #         box[-1].bias.data[:] = 1.0
+    #         # cls (.01 objects, 80 classes, 640 image)
+    #         cls[-1].bias.data[:self.nc] = math.log(5 / self.nc / (640 / s) ** 2)
 
 
 class YOLO(torch.nn.Module):
-    def __init__(self, width, depth, csp, pretrain_path=None):
+    def __init__(self, width, depth, csp, num_classes, pretrain_path=None):
         super().__init__()
         self.net = DarkNet(width, depth, csp)
         self.fpn = DarkFPN(width, depth, csp)
-
         self.pretrain_path = pretrain_path
-
         # img_dummy = torch.zeros(1, width[0], 256, 256)
         # self.head = Head(num_classes, (width[3], width[4], width[5]))
         # self.head.stride = torch.tensor([256 / x.shape[-2] for x in self.forward(img_dummy)])
@@ -312,7 +322,7 @@ class YOLO(torch.nn.Module):
             return
         state_dict = self.state_dict()
 
-        pretrain_state_dict = torch.load(self.pretrain_path, map_location="cuda", weights_only=False)
+        pretrain_state_dict = torch.load(self.pretrain_path, weights_only=True)
         
         for param_name, value in pretrain_state_dict.items():
             if param_name not in state_dict:
@@ -323,13 +333,11 @@ class YOLO(torch.nn.Module):
 
         print("backbone2D : YOLOv11 pretrained loaded!", flush=True)
 
-
 # def yolo_v11_n(num_classes: int = 80):
 #     csp = [False, True]
 #     depth = [1, 1, 1, 1, 1, 1]
 #     width = [3, 16, 32, 64, 128, 256]
 #     return YOLO(width, depth, csp, num_classes)
-
 
 # def yolo_v11_t(num_classes: int = 80):
 #     csp = [False, True]
@@ -337,13 +345,11 @@ class YOLO(torch.nn.Module):
 #     width = [3, 24, 48, 96, 192, 384]
 #     return YOLO(width, depth, csp, num_classes)
 
-
 # def yolo_v11_s(num_classes: int = 80):
 #     csp = [False, True]
 #     depth = [1, 1, 1, 1, 1, 1]
 #     width = [3, 32, 64, 128, 256, 512]
 #     return YOLO(width, depth, csp, num_classes)
-
 
 # def yolo_v11_m(num_classes: int = 80):
 #     csp = [True, True]
@@ -351,13 +357,11 @@ class YOLO(torch.nn.Module):
 #     width = [3, 64, 128, 256, 512, 512]
 #     return YOLO(width, depth, csp, num_classes)
 
-
 # def yolo_v11_l(num_classes: int = 80):
 #     csp = [True, True]
 #     depth = [2, 2, 2, 2, 2, 2]
 #     width = [3, 64, 128, 256, 512, 512]
 #     return YOLO(width, depth, csp, num_classes)
-
 
 # def yolo_v11_x(num_classes: int = 80):
 #     csp = [True, True]

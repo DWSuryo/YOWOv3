@@ -1,4 +1,4 @@
-from scripts import train, ava_eval, ucf_eval, detect, live
+from scripts import train, ava_eval, ucf_eval, detect, live, info
 import argparse
 from utils.build_config import build_config
 from datetime import datetime
@@ -38,6 +38,9 @@ if __name__ == "__main__":
     
     elif args.mode == 'onnx':
         onnx.export2onnx(config=config)
+
+    elif args.mode == 'info':
+        info.analyze_and_save_yowo(config=config)
 
     time_end = datetime.now()
     print("Finished at Date and Time:", time_end.strftime("%Y-%m-%d %H:%M:%S"))

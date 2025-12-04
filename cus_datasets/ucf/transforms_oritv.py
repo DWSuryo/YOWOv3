@@ -51,7 +51,7 @@ class UCF_transform():
     
     def __call__(self, clip, targets):
         # W, H = clip[-1].size
-        print(clip[1].shape)
+        # print(clip[1].shape)
         H, W = clip[-1].shape[1], clip[-1].shape[2]
         targets[:, :4] /= np.array([W, H, W, H])
 

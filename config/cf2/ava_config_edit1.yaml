@@ -10,12 +10,12 @@ BACKBONE2D:
       x : weights/backbone2D/YOLOv8/v8_x.pth
 
   YOLOv11:
-    ver : n
+    ver : m
 
     PRETRAIN:
-      n : weights/backbone2D/YOLOv11/best_n_50_state_dict.pt
-      s : weights/backbone2D/YOLOv11/best_s_50_state_dict.pt
-      m : weights/backbone2D/YOLOv11/best_m_50_state_dict.pt
+      n : weights/backbone2D/YOLOv11/best_n50.pt
+      s : weights/backbone2D/YOLOv11/best_s50.pt
+      m : weights/backbone2D/YOLOv11/best_m50.pt
       l : weights/backbone2D/YOLOv11/v11_l.pt
       x : weights/backbone2D/YOLOv11/v11_x.pt
 
@@ -103,19 +103,19 @@ LOSS:
 
 config_path       : config/cf2/ava_config_edit1.yaml
 dataset           : ava
-loss              : simota  
+loss              : simota
 active_checker    : True
 num_classes       : 80
-backbone2D        : yolov8
+backbone2D        : yolov11
 backbone3D        : i3d
 fusion_module     : CFAM
 mode              : decoupled
 interchannels     : [256, 256, 256]
-pretrain_path     :
-# pretrain_path     : weights/model_checkpoint/ema_epoch_1.pth
+# pretrain_path     :
+pretrain_path     : weights/model_checkpoint/ema_epoch_1.pth
 # pretrain_path     : weights/model_checkpoint/torchvision-pil/ema_epoch_1.pth
 # pretrain_path     : weights/model_checkpoint/avav2.2/ema_epoch_9_m30.pth
-pretrain_path     : weights/model_checkpoint/avav2.2/yolov8_n_i3d/ema_epoch_9.pth
+# pretrain_path     : weights/model_checkpoint/avav2.2/yolov8_n_i3d/ema_epoch_9.pth
 # pretrain_path     : weights/model_checkpoint/avav2.2/yolov11_n_i3d/ema_epoch_9.pth
 # pretrain_path     : weights/model_checkpoint/ema_epoch_9.pth
 # data_root         : E:/Dito/Dataset/avav2.2_train_set
@@ -129,7 +129,7 @@ lr                : 0.0001
 weight_decay      : 0.0005
 max_step_warmup   : 500
 adjustlr_schedule : [3, 4, 5, 6]
-max_epoch         : 9
+max_epoch         : 1
 lr_decay          : 0.5
 save_folder       : weights/model_checkpoint/
 sampling_rate     : 1
