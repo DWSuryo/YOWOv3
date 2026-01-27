@@ -112,7 +112,8 @@ fusion_module     : CFAM
 mode              : decoupled
 interchannels     : [256, 256, 256]
 # pretrain_path     :
-pretrain_path     : weights/model_checkpoint/ema_epoch_1.pth
+# pretrain_path     : weights/model_checkpoint/ema_epoch_1.pth
+pretrain_path     : "weights/model_checkpoint/avav2.2/y11m50_i3d_e1_albx/ema_epoch_1.pth"
 # pretrain_path     : weights/model_checkpoint/torchvision-pil/ema_epoch_1.pth
 # pretrain_path     : weights/model_checkpoint/avav2.2/ema_epoch_9_m30.pth
 # pretrain_path     : weights/model_checkpoint/avav2.2/yolov8_n_i3d/ema_epoch_9.pth
